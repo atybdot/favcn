@@ -1,0 +1,16 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "favicon",
+  "type": "registry:component",
+  "title": "Favicon (ICO only)",
+  "description": "Minimal favicon link tag for your project. Place favicon.ico in your public folder and use the <Favicon /> component in your layout.",
+  "dependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "components/favicon.tsx",
+      "content": "export function Favicon() {\n  return <link rel=\"icon\" href=\"/favicon.ico\" sizes=\"48x48\" />\n}\n",
+      "type": "registry:component"
+    }
+  ]
+}

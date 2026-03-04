@@ -1,0 +1,16 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "favicon",
+  "type": "registry:component",
+  "title": "Favicon (SEO Bundle)",
+  "description": "Complete favicon links with SEO bundle including ICO, PNG variants, Apple Touch Icon, and web manifest. Extract the downloaded zip into your public folder and use the <Favicon /> component in your layout.",
+  "dependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "components/favicon.tsx",
+      "content": "export function Favicon() {\n  return (\n    <>\n      <link rel=\"icon\" href=\"/favicon.ico\" sizes=\"48x48\" />\n      <link rel=\"icon\" type=\"image/png\" sizes=\"16x16\" href=\"/favicon-16x16.png\" />\n      <link rel=\"icon\" type=\"image/png\" sizes=\"32x32\" href=\"/favicon-32x32.png\" />\n      <link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/apple-touch-icon.png\" />\n      <link rel=\"manifest\" href=\"/site.webmanifest\" />\n    </>\n  )\n}\n",
+      "type": "registry:component"
+    }
+  ]
+}
