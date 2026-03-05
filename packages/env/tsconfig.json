@@ -1,0 +1,3 @@
+{
+  "extends": "@favicon/config/tsconfig.base.json"
+}
