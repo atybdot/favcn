@@ -11,7 +11,9 @@ export default defineConfig({
     tanstackStart({
       prerender: {
         enabled: true,
+        autoSubfolderIndex: true,
         crawlLinks: true,
+        failOnError: true,
       },
       sitemap: {
         enabled: true,
