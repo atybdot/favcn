@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { inject } from "@vercel/analytics";
 import { Toaster } from "@favicon/ui/components/sonner";
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
@@ -133,8 +134,13 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "favcn - Free Favicon Generator | Create Favicons from Image, Emoji, Text" },
-      { name: "google-site-verification", content: "tScB5dspOXOEsV-TcnLLoiZBlttZQThCHxWLj7lKrgw" },
+      {
+        title: "favcn - Free Favicon Generator | Create Favicons from Image, Emoji, Text",
+      },
+      {
+        name: "google-site-verification",
+        content: "tScB5dspOXOEsV-TcnLLoiZBlttZQThCHxWLj7lKrgw",
+      },
       {
         name: "description",
         content:
@@ -166,7 +172,10 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
         content:
           "Free favicon generator - create from PNG, emojis, text, shapes & gradients. 100% client-side. Supports shadcn, Next.js, Vue, Svelte.",
       },
-      { name: "twitter:image", content: "https://favcn.atyb.me/opengraph.webp" },
+      {
+        name: "twitter:image",
+        content: "https://favcn.atyb.me/opengraph.webp",
+      },
       { name: "twitter:image:alt", content: "favcn - Free Favicon Generator" },
       { name: "twitter:creator", content: "@atybme" },
       { name: "theme-color", content: "#0a0a0a" },
@@ -183,7 +192,10 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
           "favicon generator, free favicon generator, favicon maker, favicon creator, app icon generator, PNG to ICO, emoji favicon, text favicon, gradient favicon, favicon from image, favicon from emoji, favicon from text, favicon shapes, shadcn favicon, react favicon, vue favicon, svelte favicon, nextjs favicon, tailwind favicon, ico generator, apple touch icon, android icon, PWA icon, favicon converter, favicon online, favicon free, favicon no upload",
       },
       { name: "apple-mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+      {
+        name: "apple-mobile-web-app-status-bar-style",
+        content: "black-translucent",
+      },
       { name: "apple-mobile-web-app-title", content: "favcn" },
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "format-detection", content: "telephone=no" },
@@ -201,8 +213,18 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
     links: [
       { rel: "canonical", href: "https://favcn.atyb.me" },
       { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
-      { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16.png" },
-      { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32x32.png" },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "16x16",
+        href: "/favicon-16x16.png",
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "32x32",
+        href: "/favicon-32x32.png",
+      },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
       { rel: "manifest", href: "/site.webmanifest" },
       { rel: "stylesheet", href: appCss },
@@ -220,7 +242,11 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
         href: "https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@100..900&display=swap",
       },
       { rel: "alternate", hreflang: "en", href: "https://favcn.atyb.me" },
-      { rel: "alternate", hreflang: "x-default", href: "https://favcn.atyb.me" },
+      {
+        rel: "alternate",
+        hreflang: "x-default",
+        href: "https://favcn.atyb.me",
+      },
       { rel: "dns-prefetch", href: "https://favcn.atyb.me" },
       { rel: "prerender", href: "https://favcn.atyb.me" },
     ],
@@ -239,6 +265,8 @@ function RootDocument() {
   useEffect(() => {
     if (import.meta.env.DEV) {
       void import("react-grab");
+    } else {
+      inject();
     }
   }, []);
 
