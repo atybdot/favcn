@@ -1,7 +1,9 @@
 {
   "plugins": null,
   "categories": {},
-  "rules": {},
+  "rules": {
+    "complexity": ["error", { "max": 12 }]
+  },
   "settings": {
     "jsx-a11y": {
       "polymorphicPropName": null,
