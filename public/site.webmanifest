@@ -1,7 +1,7 @@
 {
   "name": "favcn - Free Favicon Generator",
   "short_name": "favcn",
-  "description": "Create favicons and app icons from images, emojis, text, shapes or gradients. Free and 100% in-browser.",
+  "description": "Free favicon generator. Turn an image, emoji, text, shape or gradient into ico, png and touch icons, entirely in the browser.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
