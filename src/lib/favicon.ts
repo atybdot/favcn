@@ -49,7 +49,7 @@ export async function emojiToImage(emoji: string): Promise<HTMLImageElement> {
 
 // --- Types for gradient / text modes ---
 
-export type BackgroundShape = "square" | "circle" | "rounded-rect";
+type BackgroundShape = "square" | "circle" | "rounded-rect";
 export type GradientType = "linear" | "radial" | "diamond";
 export type ShapeType = "square" | "circle" | "triangle" | "diamond" | "hexagon" | "star" | "heart";
 export type ShapeSize = "xs" | "sm" | "base" | "lg" | "xl";
@@ -372,6 +372,94 @@ const SHAPE_SIZE_INSET: Record<ShapeSize, number> = {
   xl: 0.05,
 };
 
+interface ShapeBox {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  cx: number;
+  cy: number;
+}
+
+type ShapeDrawer = (ctx: CanvasRenderingContext2D, box: ShapeBox) => void;
+
+const SHAPE_DRAWERS: Record<ShapeType, ShapeDrawer> = {
+  square: (ctx, { x, y, w, h }) => {
+    ctx.rect(x, y, w, h);
+  },
+
+  circle: (ctx, { cx, cy, w }) => {
+    ctx.arc(cx, cy, w / 2, 0, Math.PI * 2);
+  },
+
+  triangle: (ctx, { cx, cy, w }) => {
+    const triH = w * 0.866; // height of equilateral triangle
+    const triY = cy - triH / 2;
+    ctx.moveTo(cx, triY);
+    ctx.lineTo(cx + w / 2, triY + triH);
+    ctx.lineTo(cx - w / 2, triY + triH);
+    ctx.closePath();
+  },
+
+  diamond: (ctx, { x, y, w, h, cx, cy }) => {
+    ctx.moveTo(cx, y);
+    ctx.lineTo(x + w, cy);
+    ctx.lineTo(cx, y + h);
+    ctx.lineTo(x, cy);
+    ctx.closePath();
+  },
+
+  hexagon: (ctx, { cx, cy, w }) => {
+    const r = w / 2;
+    for (let i = 0; i < 6; i++) {
+      const angle = (Math.PI / 3) * i - Math.PI / 2;
+      const px = cx + r * Math.cos(angle);
+      const py = cy + r * Math.sin(angle);
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+  },
+
+  star: (ctx, { cx, cy, w }) => {
+    const outerR = w / 2;
+    const innerR = outerR * 0.4;
+    for (let i = 0; i < 10; i++) {
+      const angle = (Math.PI / 5) * i - Math.PI / 2;
+      const r = i % 2 === 0 ? outerR : innerR;
+      const px = cx + r * Math.cos(angle);
+      const py = cy + r * Math.sin(angle);
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+  },
+
+  heart: (ctx, { y, w, h, cx }) => {
+    const heartW = w * 0.9;
+    const heartH = h * 0.85;
+    const topY = y + h * 0.1;
+
+    ctx.moveTo(cx, topY + heartH);
+    ctx.bezierCurveTo(
+      cx - heartW / 2,
+      topY + heartH * 0.7,
+      cx - heartW / 2,
+      topY,
+      cx,
+      topY + heartH * 0.35,
+    );
+    ctx.bezierCurveTo(
+      cx + heartW / 2,
+      topY,
+      cx + heartW / 2,
+      topY + heartH * 0.7,
+      cx,
+      topY + heartH,
+    );
+  },
+};
+
 function drawShape(
   ctx: CanvasRenderingContext2D,
   size: number,
@@ -379,100 +467,18 @@ function drawShape(
   fillColor: string,
   shapeSize: ShapeSize = "base",
 ): void {
-  const insetFactor = SHAPE_SIZE_INSET[shapeSize] ?? 0.2;
-  const inset = size * insetFactor;
-  const x = inset;
-  const y = inset;
-  const w = size - inset * 2;
-  const h = size - inset * 2;
-  const cx = size / 2;
-  const cy = size / 2;
+  const inset = size * (SHAPE_SIZE_INSET[shapeSize] ?? 0.2);
 
   ctx.fillStyle = fillColor;
   ctx.beginPath();
-
-  switch (shapeType) {
-    case "square":
-      ctx.rect(x, y, w, h);
-      break;
-
-    case "circle":
-      ctx.arc(cx, cy, w / 2, 0, Math.PI * 2);
-      break;
-
-    case "triangle": {
-      const triH = w * 0.866; // height of equilateral triangle
-      const triY = cy - triH / 2;
-      ctx.moveTo(cx, triY);
-      ctx.lineTo(cx + w / 2, triY + triH);
-      ctx.lineTo(cx - w / 2, triY + triH);
-      ctx.closePath();
-      break;
-    }
-
-    case "diamond": {
-      ctx.moveTo(cx, y);
-      ctx.lineTo(x + w, cy);
-      ctx.lineTo(cx, y + h);
-      ctx.lineTo(x, cy);
-      ctx.closePath();
-      break;
-    }
-
-    case "hexagon": {
-      const r = w / 2;
-      for (let i = 0; i < 6; i++) {
-        const angle = (Math.PI / 3) * i - Math.PI / 2;
-        const px = cx + r * Math.cos(angle);
-        const py = cy + r * Math.sin(angle);
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      }
-      ctx.closePath();
-      break;
-    }
-
-    case "star": {
-      const outerR = w / 2;
-      const innerR = outerR * 0.4;
-      for (let i = 0; i < 10; i++) {
-        const angle = (Math.PI / 5) * i - Math.PI / 2;
-        const r = i % 2 === 0 ? outerR : innerR;
-        const px = cx + r * Math.cos(angle);
-        const py = cy + r * Math.sin(angle);
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      }
-      ctx.closePath();
-      break;
-    }
-
-    case "heart": {
-      const heartW = w * 0.9;
-      const heartH = h * 0.85;
-      const topY = y + h * 0.1;
-
-      ctx.moveTo(cx, topY + heartH);
-      ctx.bezierCurveTo(
-        cx - heartW / 2,
-        topY + heartH * 0.7,
-        cx - heartW / 2,
-        topY,
-        cx,
-        topY + heartH * 0.35,
-      );
-      ctx.bezierCurveTo(
-        cx + heartW / 2,
-        topY,
-        cx + heartW / 2,
-        topY + heartH * 0.7,
-        cx,
-        topY + heartH,
-      );
-      break;
-    }
-  }
-
+  SHAPE_DRAWERS[shapeType](ctx, {
+    x: inset,
+    y: inset,
+    w: size - inset * 2,
+    h: size - inset * 2,
+    cx: size / 2,
+    cy: size / 2,
+  });
   ctx.fill();
 }
 
