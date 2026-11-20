@@ -262,6 +262,18 @@ function rgbToHsl(color: ColorValue) {
   };
 }
 
+function hueSectorRgb(h: number, c: number, x: number): [number, number, number] {
+  const sectors: [number, number, number][] = [
+    [c, x, 0],
+    [x, c, 0],
+    [0, c, x],
+    [0, x, c],
+    [x, 0, c],
+    [c, 0, x],
+  ];
+  return sectors[Math.floor(h * 6) % 6] ?? [0, 0, 0];
+}
+
 function hslToRgb(hsl: { h: number; s: number; l: number }, alpha = 1): ColorValue {
   const h = hsl.h / 360;
   const s = hsl.s / 100;
@@ -270,36 +282,7 @@ function hslToRgb(hsl: { h: number; s: number; l: number }, alpha = 1): ColorVal
   const c = (1 - Math.abs(2 * l - 1)) * s;
   const x = c * (1 - Math.abs(((h * 6) % 2) - 1));
   const m = l - c / 2;
-
-  let r = 0;
-  let g = 0;
-  let b = 0;
-
-  if (h >= 0 && h < 1 / 6) {
-    r = c;
-    g = x;
-    b = 0;
-  } else if (h >= 1 / 6 && h < 2 / 6) {
-    r = x;
-    g = c;
-    b = 0;
-  } else if (h >= 2 / 6 && h < 3 / 6) {
-    r = 0;
-    g = c;
-    b = x;
-  } else if (h >= 3 / 6 && h < 4 / 6) {
-    r = 0;
-    g = x;
-    b = c;
-  } else if (h >= 4 / 6 && h < 5 / 6) {
-    r = x;
-    g = 0;
-    b = c;
-  } else if (h >= 5 / 6 && h < 1) {
-    r = c;
-    g = 0;
-    b = x;
-  }
+  const [r, g, b] = hueSectorRgb(h, c, x);
 
   return {
     r: Math.round((r + m) * 255),
@@ -309,97 +292,54 @@ function hslToRgb(hsl: { h: number; s: number; l: number }, alpha = 1): ColorVal
   };
 }
 
+function parseHexColor(value: string): ColorValue | null {
+  const hexMatch = value.match(/^#([a-fA-F0-9]{3}|[a-fA-F0-9]{6})$/);
+  return hexMatch ? hexToRgb(value) : null;
+}
+
+function parseRgbColor(value: string): ColorValue | null {
+  const match = value.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)$/);
+  if (!match) return null;
+  return {
+    r: Number.parseInt(match[1] ?? "0", 10),
+    g: Number.parseInt(match[2] ?? "0", 10),
+    b: Number.parseInt(match[3] ?? "0", 10),
+    a: match[4] ? Number.parseFloat(match[4]) : 1,
+  };
+}
+
+function parseHslColor(value: string): ColorValue | null {
+  const match = value.match(/^hsla?\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*(?:,\s*([\d.]+))?\s*\)$/);
+  if (!match) return null;
+  return hslToRgb(
+    {
+      h: Number.parseInt(match[1] ?? "0", 10),
+      s: Number.parseInt(match[2] ?? "0", 10),
+      l: Number.parseInt(match[3] ?? "0", 10),
+    },
+    match[4] ? Number.parseFloat(match[4]) : 1,
+  );
+}
+
+function parseHsbColor(value: string): ColorValue | null {
+  const match = value.match(/^hsba?\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*(?:,\s*([\d.]+))?\s*\)$/);
+  if (!match) return null;
+  return hsvToRgb({
+    h: Number.parseInt(match[1] ?? "0", 10),
+    s: Number.parseInt(match[2] ?? "0", 10),
+    v: Number.parseInt(match[3] ?? "0", 10),
+    a: match[4] ? Number.parseFloat(match[4]) : 1,
+  });
+}
+
 function parseColorString(value: string): ColorValue | null {
   const trimmed = value.trim();
-
-  // Parse hex colors
-  if (trimmed.startsWith("#")) {
-    const hexMatch = trimmed.match(/^#([a-fA-F0-9]{3}|[a-fA-F0-9]{6})$/);
-    if (hexMatch) {
-      return hexToRgb(trimmed);
-    }
-  }
-
-  // Parse rgb/rgba colors
-  const rgbMatch = trimmed.match(
-    /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)$/,
+  return (
+    parseHexColor(trimmed) ??
+    parseRgbColor(trimmed) ??
+    parseHslColor(trimmed) ??
+    parseHsbColor(trimmed)
   );
-  if (rgbMatch) {
-    return {
-      r: Number.parseInt(rgbMatch[1] ?? "0", 10),
-      g: Number.parseInt(rgbMatch[2] ?? "0", 10),
-      b: Number.parseInt(rgbMatch[3] ?? "0", 10),
-      a: rgbMatch[4] ? Number.parseFloat(rgbMatch[4]) : 1,
-    };
-  }
-
-  // Parse hsl/hsla colors
-  const hslMatch = trimmed.match(
-    /^hsla?\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*(?:,\s*([\d.]+))?\s*\)$/,
-  );
-  if (hslMatch) {
-    const h = Number.parseInt(hslMatch[1] ?? "0", 10);
-    const s = Number.parseInt(hslMatch[2] ?? "0", 10) / 100;
-    const l = Number.parseInt(hslMatch[3] ?? "0", 10) / 100;
-    const a = hslMatch[4] ? Number.parseFloat(hslMatch[4]) : 1;
-
-    // Convert HSL to RGB
-    const c = (1 - Math.abs(2 * l - 1)) * s;
-    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
-    const m = l - c / 2;
-
-    let r = 0;
-    let g = 0;
-    let b = 0;
-
-    if (h >= 0 && h < 60) {
-      r = c;
-      g = x;
-      b = 0;
-    } else if (h >= 60 && h < 120) {
-      r = x;
-      g = c;
-      b = 0;
-    } else if (h >= 120 && h < 180) {
-      r = 0;
-      g = c;
-      b = x;
-    } else if (h >= 180 && h < 240) {
-      r = 0;
-      g = x;
-      b = c;
-    } else if (h >= 240 && h < 300) {
-      r = x;
-      g = 0;
-      b = c;
-    } else if (h >= 300 && h < 360) {
-      r = c;
-      g = 0;
-      b = x;
-    }
-
-    return {
-      r: Math.round((r + m) * 255),
-      g: Math.round((g + m) * 255),
-      b: Math.round((b + m) * 255),
-      a,
-    };
-  }
-
-  // Parse hsb/hsba colors
-  const hsbMatch = trimmed.match(
-    /^hsba?\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*(?:,\s*([\d.]+))?\s*\)$/,
-  );
-  if (hsbMatch) {
-    const h = Number.parseInt(hsbMatch[1] ?? "0", 10);
-    const s = Number.parseInt(hsbMatch[2] ?? "0", 10);
-    const v = Number.parseInt(hsbMatch[3] ?? "0", 10);
-    const a = hsbMatch[4] ? Number.parseFloat(hsbMatch[4]) : 1;
-
-    return hsvToRgb({ h, s, v, a });
-  }
-
-  return null;
 }
 
 type Direction = "ltr" | "rtl";
@@ -499,7 +439,7 @@ function ColorPicker(props: ColorPickerProps) {
   const listenersRef = useLazyRef(() => new Set<() => void>());
   const stateRef = useLazyRef<StoreState>(() => {
     const colorString = valueProp ?? defaultValue;
-    const color = hexToRgb(colorString);
+    const color = parseColorString(colorString) ?? hexToRgb(colorString);
 
     return {
       color,
