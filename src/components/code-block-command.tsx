@@ -51,7 +51,7 @@ const PM_ORDER: PackageManager[] = ["npm", "pnpm", "bun"];
 // CodeBlockCommand — adapted from @ncdai/code-block-command
 // ---------------------------------------------------------------------------
 
-export interface CodeBlockCommandProps {
+interface CodeBlockCommandProps {
   npm: string;
   pnpm: string;
   bun: string;
