@@ -1,5 +1,3 @@
-import JSZip from "jszip";
-
 // --- Types ---
 export type RequiredSizes = {
   faviconIco: boolean;
@@ -650,6 +648,7 @@ export async function generateAssetsZip(
 ): Promise<{ zipBlob: Blob; htmlCode: string }> {
   // Ensure the source image is fully loaded before processing
   const img = await ensureImageLoaded(sourceImage);
+  const { default: JSZip } = await import("jszip");
   const zip = new JSZip();
   const htmlLines: string[] = [];
 

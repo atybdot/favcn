@@ -1,11 +1,18 @@
+import { cloudflare } from "@cloudflare/vite-plugin";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
+import { SITE_URL } from "./src/lib/site";
+
 export default defineConfig({
   plugins: [
+    cloudflare({
+      viteEnvironment: { name: "ssr" },
+      experimental: { newConfig: true },
+    }),
     tsconfigPaths(),
     tailwindcss(),
     tanstackStart({
@@ -17,7 +24,7 @@ export default defineConfig({
       },
       sitemap: {
         enabled: true,
-        host: "https://favcn.atyb.me",
+        host: SITE_URL,
       },
     }),
     viteReact({
@@ -27,6 +34,6 @@ export default defineConfig({
     }),
   ],
   server: {
-    port: 3001,
+    port: 3000,
   },
 });

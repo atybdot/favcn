@@ -1,3 +1,5 @@
+import { SITE_SOCIAL, SITE_URL } from "./site";
+
 export const SOCIALS = {
   author: {
     github: "https://github.com/atybdot",
@@ -5,7 +7,7 @@ export const SOCIALS = {
     site: "https://atyb.me",
   },
   site: {
-    github: "https://github.com/atybdot/favcn",
-    site: "https://favcn.atyb.me",
+    github: SITE_SOCIAL.github,
+    site: SITE_URL,
   },
 };

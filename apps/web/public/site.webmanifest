@@ -1,6 +1,14 @@
 {
-  "name": "",
-  "short_name": "",
+  "name": "favcn - Free Favicon Generator",
+  "short_name": "favcn",
+  "description": "Create favicons and app icons from images, emojis, text, shapes or gradients. Free and 100% in-browser.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["developer", "design", "utilities"],
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
@@ -13,7 +21,6 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
-  "display": "standalone"
+  "theme_color": "#0a0a0a",
+  "background_color": "#0a0a0a"
 }

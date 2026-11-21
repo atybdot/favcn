@@ -264,13 +264,15 @@ export function Generator() {
     <div className="flex min-w-0 flex-col gap-12">
       {/* header */}
       <header className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl">favcn.</h1>
+        <div className="flex items-center justify-between gap-4">
+          <h1 className="text-3xl">
+            <span className="text-muted-foreground">favcn.</span> favicon generator
+          </h1>
           <ModeToggle />
         </div>
         <p className="text-muted-foreground tracking-tight">
-          Convert images, emojis, gradients, shapes or text into pixel-perfect favicons and app
-          icons for any framework.
+          Create a favicon from an image, emoji, gradient, shape or text. Free, in-browser, and
+          ready for any framework.
         </p>
       </header>
 

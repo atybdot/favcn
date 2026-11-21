@@ -1,4 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@favicon/ui/components/tabs";
+import { SITE_URL } from "@/lib/site";
 import { CodeBlockCommand, convertNpmCommand } from "./code-block-command";
 import { CodeBlock } from "./code-block";
 
@@ -6,7 +7,7 @@ import { CodeBlock } from "./code-block";
 // Registry base URL
 // ---------------------------------------------------------------------------
 
-const REGISTRY_BASE = "https://favcn.atyb.me/registry";
+const REGISTRY_BASE = `${SITE_URL}/registry`;
 
 // ---------------------------------------------------------------------------
 // Static HTML code — deterministic based on bundle flag
