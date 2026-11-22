@@ -33,20 +33,31 @@ yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 
-# Turbo
+# Caches
 .turbo
 .nx
-
-# Better-T-Stack
 .alchemy
+.tanstack
+.nitro
+.vinxi
+.output
+.react-router
+dev-dist
+.cache
+tmp
+temp
 
 # Testing
 coverage
 .nyc_output
 
+# Deploy
+.wrangler
+.vercel
+.netlify
+.dev.vars*
+*.pem
+*.local
+
 # Misc
 *.tgz
-.cache
-tmp
-temp
-.vercel
