@@ -121,11 +121,29 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply font-sans bg-background text-foreground;
+    @apply font-sans bg-background text-foreground tracking-tight;
   }
   html {
     @apply font-sans;
   }
+}
+
+@utility checkerboard {
+  --checker: color-mix(in oklch, var(--muted-foreground) 20%, transparent);
+  background-color: var(--background);
+  background-image:
+    linear-gradient(
+      45deg,
+      var(--checker) 25%,
+      transparent 25%,
+      transparent 75%,
+      var(--checker) 75%
+    ),
+    linear-gradient(45deg, var(--checker) 25%, transparent 25%, transparent 75%, var(--checker) 75%);
+  background-size: 12px 12px;
+  background-position:
+    0 0,
+    6px 6px;
 }
 
 @font-face {
