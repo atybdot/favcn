@@ -5,7 +5,7 @@ import {
   EmojiPickerSearch,
   EmojiPickerContent,
   EmojiPickerFooter,
-} from "@favicon/ui/components/ui/emoji-picker";
+} from "@/components/ui/emoji-picker";
 
 import { emojiToImage } from "../lib/favicon";
 

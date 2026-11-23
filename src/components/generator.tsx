@@ -10,10 +10,10 @@ import {
   Type,
   Shapes,
 } from "lucide-react";
-import { Button } from "@favicon/ui/components/button";
-import { Checkbox } from "@favicon/ui/components/checkbox";
-import { Label } from "@favicon/ui/components/label";
-import { toast } from "@favicon/ui/components/sonner";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { toast } from "@/components/ui/sonner";
 
 import {
   fileToImage,

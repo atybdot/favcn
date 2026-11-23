@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { inject } from "@vercel/analytics";
-import { Toaster } from "@favicon/ui/components/sonner";
+import { Toaster } from "@/components/ui/sonner";
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 

@@ -8,7 +8,7 @@ import {
   ColorPickerInput,
   ColorPickerSwatch,
   ColorPickerTrigger,
-} from "@favicon/ui/components/color-picker";
+} from "@/components/ui/color-picker";
 interface ColorInputProps {
   value: string;
   onChange: (value: string) => void;

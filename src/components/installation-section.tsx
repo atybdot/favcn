@@ -1,4 +1,4 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@favicon/ui/components/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SITE_URL } from "@/lib/site";
 import { CodeBlockCommand, convertNpmCommand } from "./code-block-command";
 import { CodeBlock } from "./code-block";

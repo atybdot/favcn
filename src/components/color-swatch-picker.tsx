@@ -7,8 +7,8 @@ import {
   ColorPickerHueSlider,
   ColorPickerInput,
   ColorPickerTrigger,
-} from "@favicon/ui/components/color-picker";
-import { cn } from "@favicon/ui/lib/utils";
+} from "@/components/ui/color-picker";
+import { cn } from "@/lib/utils";
 import { PaintBucket } from "lucide-react";
 
 const PRESET_COLORS = [

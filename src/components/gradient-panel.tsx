@@ -11,8 +11,8 @@ import {
   ArrowDown,
   ArrowDownRight,
 } from "lucide-react";
-import { Input } from "@favicon/ui/components/input";
-import { cn } from "@favicon/ui/lib/utils";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 import {
   gradientToImage,

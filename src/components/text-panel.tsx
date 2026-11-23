@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from "react";
-import { Input } from "@favicon/ui/components/input";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@favicon/ui/components/select";
-import { cn } from "@favicon/ui/lib/utils";
+} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 import { textToImage } from "../lib/favicon";
 import { ColorSwatchPicker } from "./color-swatch-picker";

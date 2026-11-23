@@ -1,5 +1,5 @@
 import { Plus, X, Palette } from "lucide-react";
-import { Slider } from "@favicon/ui/components/slider";
+import { Slider } from "@/components/ui/slider";
 
 import {
   SOLID_COLOR_PRESETS,
