@@ -118,13 +118,7 @@ export interface TextOptions {
   shape: BackgroundShape;
 }
 
-export interface EmojiOptions {
-  emoji: string;
-  background: BackgroundOptions;
-  shape: BackgroundShape;
-}
-
-export interface ShapeOptions {
+interface ShapeOptions {
   shapeType: ShapeType;
   fillColor: string;
   shapeSize?: ShapeSize;
@@ -325,35 +319,6 @@ export function textToImage(opts: TextOptions): HTMLImageElement {
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText(opts.text, size / 2, size / 2 + fontPx * 0.04);
-
-  ctx.restore();
-
-  const img = new Image();
-  img.src = canvas.toDataURL("image/png");
-  return img;
-}
-
-// --- Emoji with background rendering ---
-
-export function emojiWithBackgroundToImage(opts: EmojiOptions): HTMLImageElement {
-  const size = 512;
-  const canvas = document.createElement("canvas");
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("Could not get 2d context for emoji");
-
-  ctx.save();
-  clipToShape(ctx, size, opts.shape);
-
-  // Background
-  fillBackground(ctx, size, opts.background);
-
-  // Emoji
-  ctx.font = `${size * 0.55}px 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif`;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(opts.emoji, size / 2, size / 2 + size * 0.03);
 
   ctx.restore();
 
