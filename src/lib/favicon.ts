@@ -91,7 +91,7 @@ function resolveRadialRadius(radialSize: RadialSize, size: number): number {
   return (map[radialSize] ?? 0.5) * size;
 }
 
-export interface GradientOptions {
+interface GradientOptions {
   colors: string[];
   gradientType: GradientType;
   angle: number; // degrees, used for linear
@@ -100,7 +100,7 @@ export interface GradientOptions {
   radialSize?: RadialSize;
 }
 
-export interface BackgroundOptions {
+interface BackgroundOptions {
   type: "solid" | "gradient";
   solidColor?: string;
   gradientColors?: string[];
@@ -108,7 +108,7 @@ export interface BackgroundOptions {
   gradientAngle?: number;
 }
 
-export interface TextOptions {
+interface TextOptions {
   text: string;
   fontSize: number; // 0-100 slider value, mapped internally
   textColor: string;
@@ -284,8 +284,11 @@ function fillBackground(
     });
 
     ctx.fillStyle = gradient;
+  } else if (background.solidColor) {
+    ctx.fillStyle = background.solidColor;
   } else {
-    ctx.fillStyle = background.solidColor ?? "#18181b";
+    // No background supplied: leave the canvas transparent.
+    return;
   }
   ctx.fillRect(0, 0, size, size);
 }
