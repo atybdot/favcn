@@ -25,20 +25,40 @@ const PRESET_COLORS = [
   "#ec4899",
 ];
 
+const TRANSPARENT = "rgba(0, 0, 0, 0)";
+const TRANSPARENT_KEY = TRANSPARENT.replace(/\s+/g, "").toLowerCase();
+
 interface ColorSwatchPickerProps {
   value: string;
   onChange: (value: string) => void;
   /** When true, includes an alpha slider and supports rgba values */
   withAlpha?: boolean;
+  /** Adds a swatch that renders no fill, leaving the canvas transparent */
+  withTransparent?: boolean;
 }
 
 export function ColorSwatchPicker({
   value,
   onChange,
   withAlpha = false,
+  withTransparent = false,
 }: ColorSwatchPickerProps): React.JSX.Element {
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex flex-wrap items-center gap-1">
+      {withTransparent ? (
+        <button
+          type="button"
+          onClick={() => onChange(TRANSPARENT)}
+          title="No background"
+          aria-label="No background"
+          className={cn(
+            "checkerboard size-6 shrink-0 rounded-none border transition-all",
+            value.replace(/\s+/g, "").toLowerCase() === TRANSPARENT_KEY
+              ? "border-foreground ring-1 ring-foreground ring-offset-1 ring-offset-background"
+              : "border-foreground/10 hover:border-muted-foreground",
+          )}
+        />
+      ) : null}
       {PRESET_COLORS.map((color) => (
         <button
           key={color}

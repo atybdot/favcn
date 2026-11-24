@@ -248,7 +248,12 @@ export function TextPanel({ onImageReady }: TextPanelProps): React.JSX.Element {
         {/* background color */}
         <div className="space-y-2">
           <span className="text-[11px] text-muted-foreground">background</span>
-          <ColorSwatchPicker value={backgroundColor} onChange={setBackgroundColor} />
+          <ColorSwatchPicker
+            value={backgroundColor}
+            onChange={setBackgroundColor}
+            withAlpha
+            withTransparent
+          />
         </div>
       </div>
     </div>

@@ -135,7 +135,12 @@ export function ShapePanel({ onImageReady }: ShapePanelProps): React.JSX.Element
       {/* background color */}
       <div className="space-y-2">
         <span className="text-[11px] text-muted-foreground">background color</span>
-        <ColorSwatchPicker value={backgroundColor} onChange={setBackgroundColor} withAlpha />
+        <ColorSwatchPicker
+          value={backgroundColor}
+          onChange={setBackgroundColor}
+          withAlpha
+          withTransparent
+        />
       </div>
     </div>
   );
