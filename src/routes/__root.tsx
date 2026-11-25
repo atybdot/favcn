@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import { inject } from "@vercel/analytics";
 import { Toaster } from "@/components/ui/sonner";
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 import { ThemeProvider } from "../components/theme-provider";
+import appCss from "../index.css?url";
 import {
   SITE_AUTHOR,
   SITE_DESCRIPTION,
@@ -20,6 +20,10 @@ import { FAQ_ITEMS, HOW_TO_STEPS } from "../lib/seo-content";
 export interface RouterAppContext {}
 
 const PAGE_URL = `${SITE_URL}/`;
+
+// Umami only collects on the production hostname, so previews and localhost
+// never land in the shared website.
+const TRACKING_DOMAIN = new URL(SITE_URL).hostname;
 
 const SEO_SCRIPT = JSON.stringify({
   "@context": "https://schema.org",
@@ -152,6 +156,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
       { name: "referrer", content: "origin-when-cross-origin" },
     ],
     links: [
+      { rel: "stylesheet", href: appCss },
       { rel: "canonical", href: PAGE_URL },
       { rel: "icon", type: "image/x-icon", href: "/favicon.ico", sizes: "48x48" },
       { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16.png" },

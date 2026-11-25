@@ -12,10 +12,10 @@ export const SITE_URL = "https://favcn.atyb.dev";
 
 export const SITE_NAME = "favcn";
 
-export const SITE_TITLE = "Free Favicon Generator: ICO, PNG, Emoji & Text | favcn";
+export const SITE_TITLE = "Free favicon generator for ico, png and touch icons | favcn";
 
 export const SITE_DESCRIPTION =
-  "Create a favicon from an image, emoji, text, shape or gradient. Free, private and 100% in-browser. Export ICO, PNG, Apple Touch and Android icons in one click.";
+  "Turn an image, emoji, text, shape or gradient into favicon.ico, png sizes, an apple touch icon and android icons. Runs in your browser, no upload, no account.";
 
 export const SITE_KEYWORDS = [
   "favicon generator",
