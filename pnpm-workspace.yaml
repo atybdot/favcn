@@ -1,0 +1,8 @@
+# pnpm reads its settings from here, not from package.json.
+# pnpm 11+ replaced onlyBuiltDependencies with allowBuilds.
+# Everything not listed stays blocked from running install scripts.
+allowBuilds:
+  esbuild: true
+  workerd: true
+  msw: true
+  sharp: true

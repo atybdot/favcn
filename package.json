@@ -66,5 +66,5 @@
       "oxfmt --write"
     ]
   },
-  "packageManager": "bun@1.4.4"
+  "packageManager": "pnpm@12.8.1"
 }
