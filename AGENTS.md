@@ -52,6 +52,6 @@ TypeScript is strict with `noUnusedLocals` and `noUnusedParameters`, so remove u
 
 ## Deployment
 
-Deploys run in GitHub Actions on every push to `development` (`.github/workflows/deploy.yml`), never from a laptop. The workflow builds and runs `wrangler deploy` with the pinned wrangler, using `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
+Deploys run in Cloudflare Workers Builds. The `favcn` worker is connected to `atybdot/favcn` in the Cloudflare dashboard and builds every push to `development`; there is no deploy step in GitHub Actions and no token stored in the repo.
 
-The worker is named `favcn` in `cloudflare.config.ts` and serves `favcn.atyb.dev`. A hostname can only attach to one Worker, so a rename means deleting or detaching the old worker before the new one can claim the domain.
+The worker serves `favcn.atyb.dev`. A hostname can only attach to one Worker, so the old `favcn-mono` must be deleted or detached before the first build of `favcn` can claim the domain.
