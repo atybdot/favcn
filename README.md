@@ -1,78 +1,76 @@
-# favicon
+# favcn
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines React, TanStack Start, and more.
+A favicon generator. Pick an image, emoji, text, shape or gradient, then export ICO, PNG, Apple Touch and Android icons. Everything runs in the browser; no file leaves the machine.
 
-## Features
+The page is prerendered at build time, so the first request returns the full markup and copy, not an empty shell.
 
-- **TypeScript** - For type safety and improved developer experience
-- **TanStack Start** - SSR framework with TanStack Router
-- **TailwindCSS** - Utility-first CSS for rapid UI development
-- **Shared UI package** - shadcn/ui primitives live in `packages/ui`
-- **Turborepo** - Optimized monorepo build system
-- **Oxlint** - Oxlint + Oxfmt (linting & formatting)
-- **Husky** - Git hooks for code quality
+## Stack
 
-## Getting Started
+- React 19 with TanStack Start (file-based routing, SSR, prerendering)
+- Tailwind CSS v4
+- shadcn/ui primitives on Base UI
+- Cloudflare Workers for hosting
+- Vite 7
+- pnpm as package manager
+- Oxlint and Oxfmt for linting and formatting
+- Husky for the pre-commit hook
 
-First, install the dependencies:
-
-```bash
-bun install
-```
-
-Then, run the development server:
+## Getting started
 
 ```bash
-bun run dev
+pnpm install
+pnpm dev
 ```
 
-Open [http://localhost:3001](http://localhost:3001) in your browser to see the web application.
+The dev server runs at http://localhost:3000.
 
-## UI Customization
+## Scripts
 
-React web apps in this stack share shadcn/ui primitives through `packages/ui`.
+| Command            | What it does                                                                 |
+| ------------------ | ---------------------------------------------------------------------------- |
+| `pnpm dev`         | Start the dev server                                                         |
+| `pnpm build`       | Production build, prerender and sitemap                                      |
+| `pnpm serve`       | Preview the production build                                                 |
+| `pnpm deploy`      | Build, then deploy to Cloudflare Workers                                     |
+| `pnpm cf-typegen`  | Regenerate `worker-configuration.d.ts` after changing `cloudflare.config.ts` |
+| `pnpm check-types` | Run `tsc --noEmit`                                                           |
+| `pnpm check`       | Lint and format every file                                                   |
+| `pnpm format`      | Format only                                                                  |
 
-- Change design tokens and global styles in `packages/ui/src/styles/globals.css`
-- Update shared primitives in `packages/ui/src/components/*`
-- Adjust shadcn aliases or style config in `packages/ui/components.json` and `apps/web/components.json`
+## Layout
 
-### Add more shared components
+```
+favcn/
+├── public/                 # Static assets, fonts, exported icon registry
+├── src/
+│   ├── components/         # App components
+│   │   └── ui/             # shadcn/ui primitives
+│   ├── hooks/
+│   ├── lib/                # Favicon rendering, gradients, SEO copy
+│   ├── routes/             # TanStack Router file routes
+│   ├── index.css           # Tailwind entry, design tokens, fonts
+│   ├── router.tsx
+│   └── routeTree.gen.ts    # Generated, do not edit
+├── cloudflare.config.ts    # Worker name, entrypoint, domain
+├── vite.config.ts
+└── components.json         # shadcn config
+```
 
-Run this from the project root to add more primitives to the shared UI package:
+## Adding UI components
 
 ```bash
-npx shadcn@latest add accordion dialog popover sheet table -c packages/ui
+pnpm dlx shadcn@latest add dialog
 ```
 
-Import shared components like this:
+The CLI writes to `src/components/ui`. Import from there with the `@/` alias:
 
 ```tsx
-import { Button } from "@favicon/ui/components/button";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 ```
 
-### Add app-specific blocks
+Design tokens live in `src/index.css`.
 
-If you want to add app-specific blocks instead of shared primitives, run the shadcn CLI from `apps/web`.
+## Deployment
 
-## Git Hooks and Formatting
-
-- Initialize hooks: `bun run prepare`
-- Format and lint fix: `bun run check`
-
-## Project Structure
-
-```
-favicon/
-├── apps/
-│   ├── web/         # Frontend application (React + TanStack Start)
-├── packages/
-│   ├── ui/          # Shared shadcn/ui components and styles
-```
-
-## Available Scripts
-
-- `bun run dev`: Start all applications in development mode
-- `bun run build`: Build all applications
-- `bun run dev:web`: Start only the web application
-- `bun run check-types`: Check TypeScript types across all apps
-- `bun run check`: Run Oxlint and Oxfmt
+`pnpm deploy` builds, then `wrangler` uploads the worker. The worker name and custom domain come from `cloudflare.config.ts`.
