@@ -146,7 +146,7 @@ export function TextPanel({ onImageReady }: TextPanelProps): React.JSX.Element {
           ref={previewRef}
           width={256}
           height={256}
-          className="size-32 rounded-md border border-border bg-muted/30"
+          className="size-32 rounded-md border border-border checkerboard"
         />
       </div>
 

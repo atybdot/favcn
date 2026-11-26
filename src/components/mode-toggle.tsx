@@ -5,15 +5,18 @@ import { useTheme } from "./theme-provider";
 
 export function ModeToggle(): React.JSX.Element {
   const { setTheme, theme } = useTheme();
+  const nextTheme = theme === "light" ? "dark" : "light";
 
   return (
     <Button
       size={"icon-xs"}
       variant={"link"}
-      onClick={() => (theme === "light" ? setTheme("dark") : setTheme("light"))}
+      type="button"
+      aria-label={`Switch to ${nextTheme} theme`}
+      onClick={() => setTheme(nextTheme)}
     >
-      <Sun className="size-3 scale-100 dark:scale-0" />{" "}
-      <Moon className="absolute size-3 scale-0 dark:scale-100" />
+      <Sun aria-hidden="true" className="size-3 scale-100 dark:scale-0" />
+      <Moon aria-hidden="true" className="absolute size-3 scale-0 dark:scale-100" />
     </Button>
   );
 }

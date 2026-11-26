@@ -21,6 +21,7 @@ import {
   createFaviconUrl,
   type RequiredSizes,
 } from "../lib/favicon";
+import type { GeneratorTab } from "../lib/generator-tabs";
 import { GradientPanel } from "./gradient-panel";
 import { TextPanel } from "./text-panel";
 import { EmojiPanel } from "./emoji-panel";
@@ -33,6 +34,22 @@ import { InstallationSection } from "./installation-section";
 // ---------------------------------------------------------------------------
 
 type UploadMode = "file" | "emoji" | "gradient" | "text" | "shapes";
+
+const TAB_TO_MODE: Record<GeneratorTab, UploadMode> = {
+  image: "file",
+  emoji: "emoji",
+  text: "text",
+  shapes: "shapes",
+  gradient: "gradient",
+};
+
+const MODE_TO_TAB: Record<UploadMode, GeneratorTab> = {
+  file: "image",
+  emoji: "emoji",
+  text: "text",
+  shapes: "shapes",
+  gradient: "gradient",
+};
 
 const MODE_TABS: { value: UploadMode; label: string; icon: ElementType }[] = [
   { value: "file", label: "image", icon: ImageIcon },
@@ -67,11 +84,68 @@ const SIZES_ICO_ONLY: RequiredSizes = {
   androidIcon: false,
 };
 
+function triggerDownload(href: string, filename: string) {
+  const anchor = document.createElement("a");
+  anchor.href = href;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+  URL.revokeObjectURL(href);
+}
+
+async function downloadGeneratedAsset(sourceImage: HTMLImageElement, withBundle: boolean) {
+  // Yield to the event loop so the UI (toast, button state) can update
+  // before heavy canvas work begins.
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  const sizes = withBundle ? SIZES_FULL : SIZES_ICO_ONLY;
+  const { zipBlob } = await generateAssetsZip(sourceImage, sizes);
+
+  if (withBundle) {
+    triggerDownload(URL.createObjectURL(zipBlob), "favicon-assets.zip");
+    return;
+  }
+
+  const JSZip = (await import("jszip")).default;
+  const zip = await JSZip.loadAsync(zipBlob);
+  const icoFile = zip.file("favicon.ico");
+  if (!icoFile) return;
+
+  triggerDownload(URL.createObjectURL(await icoFile.async("blob")), "favicon.ico");
+}
+
+async function loadDroppedImage(
+  acceptedFiles: File[],
+  fileRejections: FileRejection[],
+  onImage: (img: HTMLImageElement) => void,
+  onError: (message: string | null) => void,
+) {
+  onError(null);
+
+  if (fileRejections.length > 0) {
+    onError(fileRejections[0].errors[0].message);
+    return;
+  }
+
+  const file = acceptedFiles[0];
+  if (!file) return;
+
+  try {
+    onImage(await fileToImage(file));
+  } catch (error) {
+    onError(error instanceof Error ? error.message : "Failed to parse image.");
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Generator — main component
 // ---------------------------------------------------------------------------
 
-export function Generator() {
+export function Generator({ onSourceChange }: { onSourceChange?: (hasSource: boolean) => void }) {
+  const search = useSearch({ from: "/" });
+  const navigate = useNavigate({ from: "/" });
+
   const [sourceImage, setSourceImage] = useState<HTMLImageElement | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -184,30 +258,41 @@ export function Generator() {
   // Helper: does the active mode have an image selected?
   const hasFilePreview = mode === "file" && previewUrl;
 
-  const handleImageReady = (img: HTMLImageElement, url: string) => {
-    setSourceImage(img);
-    setPreviewUrl(url);
-  };
-
-  // Uses modeRef so the callback is stable and never changes (rerender-defer-reads)
-  const handleModeChange = (newMode: UploadMode) => {
+  // Switches the visible panel and restores the cached image for the chosen mode.
+  const applyMode = (newMode: UploadMode) => {
     if (newMode === modeRef.current) return;
     setMode(newMode);
+    modeRef.current = newMode;
 
-    if (newMode === "file") {
-      // Restore file image from ref (other panels have no auto-effect for file mode)
-      if (fileImageRef.current) {
-        setSourceImage(fileImageRef.current.img);
-        setPreviewUrl(fileImageRef.current.url);
-      } else {
-        setSourceImage(null);
-        setPreviewUrl(null);
-      }
+    if (newMode !== "file") {
+      // Activity makes the panel visible, its effects re-fire renderPreview()
+      // -> onImageReady(), so sourceImage/previewUrl restore themselves.
+      return;
     }
-    // For non-file modes: Activity will make the panel visible, its effects
-    // will re-fire renderPreview() -> onImageReady(), which updates sourceImage/previewUrl.
-    // We don't clear state here — the panel's effect handles restoration.
+
+    // Restore file image from ref (other panels have no auto-effect for file mode)
+    setSourceImage(fileImageRef.current?.img ?? null);
+    setPreviewUrl(fileImageRef.current?.url ?? null);
   };
+
+  // A ?tab= link, the back button, or a keyword redirect can change the URL
+  // without remounting this component. Keep the panel in sync with the URL.
+  useEffect(() => {
+    if (!search.tab) return;
+    applyMode(TAB_TO_MODE[search.tab]);
+  }, [search.tab]);
+
+  const handleModeChange = (newMode: UploadMode) => {
+    applyMode(newMode);
+    void navigate({
+      to: "/",
+      search: { tab: MODE_TO_TAB[newMode] },
+      replace: true,
+    });
+  };
+
+  // Activity visibility for the panel of the given mode.
+  const panelMode = (target: UploadMode) => (mode === target ? "visible" : "hidden");
 
   // --- Live favicon update (debounced) ---
   // Uses a downscaled 32x32 data-URL so large source images don't break
@@ -369,22 +454,22 @@ export function Generator() {
         ) : null}
 
         {/* emoji panel */}
-        <Activity mode={mode === "emoji" ? "visible" : "hidden"}>
-          <EmojiPanel onImageReady={handleImageReady} />
+        <Activity mode={panelMode("emoji")}>
+          <EmojiPanel onImageReady={handleImageReady} onClear={clearSource} />
         </Activity>
 
         {/* text panel */}
-        <Activity mode={mode === "text" ? "visible" : "hidden"}>
+        <Activity mode={panelMode("text")}>
           <TextPanel onImageReady={handleImageReady} />
         </Activity>
 
         {/* shapes panel */}
-        <Activity mode={mode === "shapes" ? "visible" : "hidden"}>
+        <Activity mode={panelMode("shapes")}>
           <ShapePanel onImageReady={handleImageReady} />
         </Activity>
 
         {/* gradient panel */}
-        <Activity mode={mode === "gradient" ? "visible" : "hidden"}>
+        <Activity mode={panelMode("gradient")}>
           <GradientPanel onImageReady={handleImageReady} />
         </Activity>
       </div>

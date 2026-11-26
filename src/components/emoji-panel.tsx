@@ -11,9 +11,10 @@ import { emojiToImage } from "../lib/favicon";
 
 interface EmojiPanelProps {
   onImageReady: (img: HTMLImageElement, previewUrl: string) => void;
+  onClear: () => void;
 }
 
-export function EmojiPanel({ onImageReady }: EmojiPanelProps): React.JSX.Element {
+export function EmojiPanel({ onImageReady, onClear }: EmojiPanelProps): React.JSX.Element {
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -32,6 +33,7 @@ export function EmojiPanel({ onImageReady }: EmojiPanelProps): React.JSX.Element
   const clearSelection = () => {
     setSelectedEmoji(null);
     setPreviewUrl(null);
+    onClear();
   };
 
   // Show preview when emoji is selected (like image mode)
@@ -49,7 +51,7 @@ export function EmojiPanel({ onImageReady }: EmojiPanelProps): React.JSX.Element
           <div className="space-y-2 text-center">
             <img
               src={previewUrl}
-              className="size-24 rounded-md border border-border bg-muted/30 object-cover"
+              className="size-24 rounded-md border border-border checkerboard object-cover"
               alt="Preview"
             />
             <span className="text-[10px] text-muted-foreground">original</span>
@@ -57,7 +59,7 @@ export function EmojiPanel({ onImageReady }: EmojiPanelProps): React.JSX.Element
           <div className="space-y-2 text-center">
             <img
               src={previewUrl}
-              className="size-8 rounded-sm border border-border bg-muted/30 object-cover"
+              className="size-8 rounded-sm border border-border checkerboard object-cover"
               alt="32px"
             />
             <span className="text-[10px] text-muted-foreground">32px</span>
@@ -65,7 +67,7 @@ export function EmojiPanel({ onImageReady }: EmojiPanelProps): React.JSX.Element
           <div className="space-y-2 text-center">
             <img
               src={previewUrl}
-              className="size-4 rounded-sm border border-border bg-muted/30 object-cover"
+              className="size-4 rounded-sm border border-border checkerboard object-cover"
               alt="16px"
             />
             <span className="text-[10px] text-muted-foreground">16px</span>

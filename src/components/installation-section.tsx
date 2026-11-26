@@ -121,13 +121,13 @@ export function InstallationSection({ isBundle }: { isBundle: boolean }) {
         <p className="text-xs leading-relaxed text-muted-foreground">
           {isBundle ? (
             <>
-              extract the zip into your <Code>public</Code> folder, then add the links to your
-              project.
+              extract the zip into your <Code>public</Code> folder, then add the link tags to your
+              document head.
             </>
           ) : (
             <>
               place <Code>favicon.ico</Code> in your <Code>public</Code> folder, then add the link
-              to your project.
+              tag to your document head.
             </>
           )}
         </p>
@@ -215,36 +215,37 @@ export default function RootLayout({ children }) {
       {/* -- Quick reference -- */}
       <div className="mt-2 rounded-md border border-border bg-muted/20 p-4">
         <h3 className="mb-2 text-xs font-medium">
-          {isBundle ? "files included in bundle:" : "file downloaded:"}
+          {isBundle ? "files in the bundle:" : "your download:"}
         </h3>
         {isBundle ? (
           <ul className="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px] text-muted-foreground">
             <li>
-              <code className="text-foreground">favicon.ico</code> — browser tabs
+              <code className="text-foreground">favicon.ico</code>: tabs and bookmarks
             </li>
             <li>
-              <code className="text-foreground">favicon-16x16.png</code> — small icon
+              <code className="text-foreground">favicon-16x16.png</code>: 16px png fallback
             </li>
             <li>
-              <code className="text-foreground">favicon-32x32.png</code> — standard icon
+              <code className="text-foreground">favicon-32x32.png</code>: 32px png fallback
             </li>
             <li>
-              <code className="text-foreground">favicon-48x48.png</code> — google seo
+              <code className="text-foreground">favicon-48x48.png</code>: google search results
             </li>
             <li>
-              <code className="text-foreground">apple-touch-icon.png</code> — ios home screen
+              <code className="text-foreground">apple-touch-icon.png</code>: ios home screen
             </li>
             <li>
-              <code className="text-foreground">android-chrome-*.png</code> — android
+              <code className="text-foreground">android-chrome-*.png</code>: android home screens
             </li>
             <li>
-              <code className="text-foreground">site.webmanifest</code> — pwa manifest
+              <code className="text-foreground">site.webmanifest</code>: pwa manifest
             </li>
           </ul>
         ) : (
           <ul className="text-[11px] text-muted-foreground">
             <li>
-              <code className="text-foreground">favicon.ico</code> — multi-size icon (16, 32, 48px)
+              <code className="text-foreground">favicon.ico</code>: 16, 32 and 48px frames in one
+              file
             </li>
           </ul>
         )}
