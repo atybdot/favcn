@@ -1,16 +1,45 @@
 # Dependencies
 node_modules
 .pnp
-.pnp.js
+.pnp.*
 
 # Build outputs
 dist
 build
+out
 *.tsbuildinfo
 
-# Environment variables
+# Server / deploy
+.wrangler
+.netlify
+.alchemy
+.dev.vars*
+
+# Environment
 .env
 .env*.local
+!.env.example
+
+# Framework caches
+.turbo
+.nx
+.tanstack
+.nitro
+.vinxi
+.output
+.react-router
+dev-dist
+
+# Testing
+coverage
+.nyc_output
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # IDEs and editors
 .vscode/*
@@ -22,31 +51,12 @@ build
 *.swp
 *.swo
 *~
-.DS_Store
-
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
-.pnpm-debug.log*
-
-# Turbo
-.turbo
-.nx
-
-# Better-T-Stack
-.alchemy
-
-# Testing
-coverage
-.nyc_output
 
 # Misc
 *.tgz
 .cache
 tmp
 temp
-.vercel
+.DS_Store
+*.pem
+*.local

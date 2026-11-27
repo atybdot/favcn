@@ -1,17 +1,17 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
-    "context7": {
-      "type": "local",
-      "command": ["npx", "-y", "@upstash/context7-mcp"],
-      "enabled": true,
-      "environment": {}
-    },
-    "shadcn": {
-      "type": "local",
-      "command": ["npx", "-y", "shadcn@latest", "mcp"],
-      "enabled": true,
-      "environment": {}
+    "servers": {
+      "context7": {
+        "type": "local",
+        "command": ["npx", "-y", "@upstash/context7-mcp"],
+        "environment": {}
+      },
+      "shadcn": {
+        "type": "local",
+        "command": ["npx", "-y", "shadcn@latest", "mcp"],
+        "environment": {}
+      }
     }
   }
 }

@@ -1,193 +1,57 @@
-# AGENTS.md - Developer Guide for This Project
+# AGENTS.md
 
-## Project Overview
+A single-package app, not a monorepo. pnpm installs, Vite builds, Cloudflare Workers serve.
 
-This is a monorepo using Turborepo with Bun as package manager. It contains:
-
-- `apps/web` - Main web application (Vite + React + TanStack Start)
-- `packages/ui` - Shared UI component library
-- `packages/env` - Environment variables using @t3-oss/env-core + Zod
-- `packages/config` - Shared configuration
-
-## Build/Lint/Test Commands
-
-### Root Commands (from monorepo root)
+## Commands
 
 ```bash
-# Development
-bun run dev                    # Run all packages in dev mode
-bun run dev:web                # Run only web app in dev mode
-
-# Build
-bun run build                  # Build all packages
-
-# Type checking
-bun run check-types            # Type-check all packages (turbo check-types)
-
-# Linting & Formatting
-bun run check                  # Run oxlint AND oxfmt (fixes format)
+pnpm install
+pnpm dev             # http://localhost:3000
+pnpm build           # client + SSR build, then prerender and sitemap
+pnpm check-types
+pnpm check           # oxlint + oxfmt --write
 ```
 
-### Package-specific Commands
+`pnpm build` prerenders `/` and crawls internal links, so a broken route fails the build rather than the deploy. `dist/client/index.html` is the finished page, with the copy in the markup. Keep it that way: the build must not depend on client-side fetching to render content.
 
-```bash
-# Web app (apps/web)
-bun run dev                    # Vite dev server (port 3001)
-bun run build                  # Vite build
-bun run serve                  # Vite preview
+After editing `cloudflare.config.ts`, run `pnpm cf-typegen` to regenerate `worker-configuration.d.ts`.
 
-# UI package (packages/ui)
-bun run check-types            # TypeScript check only
-```
+## Pinned build versions
 
-### Single File/Component Development
+`@tanstack/react-start`, `@tanstack/react-router`, `@tanstack/router-plugin`, `@tanstack/react-router-devtools`, `vite`, `@cloudflare/vite-plugin` and `wrangler` are pinned to exact versions. Newer minors break the build: react-start 1.169 drops the client entry (rollup then looks for `index.html`), and wrangler 4.156+ rejects the `legacy_env` field that `@cloudflare/vite-plugin` 1.40 writes into `dist/server/wrangler.json`.
 
-```bash
-# Run a specific package's dev server
-bun run dev --filter=web       # or use bun run dev:web
+Before raising any of them, run `pnpm build` and confirm `[prerender] Prerendered 1 pages`. Keep the seven versions in step with each other; they are tested as one set.
 
-# Format a single file with oxfmt
-bunx oxfmt path/to/file.tsx
-```
-
-## Code Style Guidelines
-
-### General Conventions
-
-- **Package Manager**: Always use Bun (`bun install`, `bun add <package>`)
-- **Module System**: ESM (`"type": "module"` in package.json)
-- **Language**: TypeScript throughout
-
-### Imports
-
-```typescript
-// Workspace packages (use @favicon/ prefix)
-import { Button } from "@favicon/ui/components/button";
-import { cn } from "@favicon/ui/lib/utils";
-import { env } from "@favicon/env/web";
-
-// External packages
-import { createFileRoute } from "@tanstack/react-router";
-import { clsx, type ClassValue } from "clsx";
-
-// Relative imports for same-package files
-import { Loader } from "./components/loader";
-```
-
-### Naming Conventions
-
-- **Components**: PascalCase (e.g., `Button`, `HomeComponent`)
-- **Files**: kebab-case for utilities, PascalCase for components (e.g., `utils.ts`, `button.tsx`)
-- **Hooks**: camelCase starting with `use` (e.g., `useAuth`)
-- **Constants**: UPPER_SNAKE_CASE for compile-time constants (e.g., `TITLE_TEXT`)
-
-### Types
-
-- Always use explicit return types for exported functions
-- Use `type` for type aliases, `interface` for object shapes
-- Prefer Zod for runtime validation (see `packages/env/src/web.ts`)
-
-```typescript
-// Good
-function Button({ ...props }: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
-  return <ButtonPrimitive {...props} />;
-}
-
-// Bad - missing types
-function Button(props) { ... }
-```
-
-### Component Patterns
-
-Use shadcn/ui-style patterns with CVA:
-
-```typescript
-import { cva, type VariantProps } from "class-variance-authority";
-
-const buttonVariants = cva("base classes", {
-  variants: {
-    variant: { default: "...", destructive: "..." },
-    size: { default: "...", sm: "..." },
-  },
-  defaultVariants: { variant: "default", size: "default" },
-});
-
-function Button({ className, variant, size, ...props }: ButtonProps) {
-  return <Primitive className={cn(buttonVariants({ variant, size }), className)} {...props} />;
-}
-```
-
-### CSS/Tailwind
-
-- Use Tailwind CSS v4 with `@tailwindcss/vite`
-- Use `cn()` utility from `@favicon/ui/lib/utils` for conditional classes
-- Avoid custom CSS unless necessary; use Tailwind utility classes
-
-### Error Handling
-
-- Use Zod schemas for environment variables and API responses
-- Wrap async operations in try/catch where appropriate
-- Use Error Boundaries for React component errors
-
-### Linting & Formatting
-
-- **oxlint** is configured at root (`.oxlintrc.json`)
-- **oxfmt** formats code automatically
-- **Pre-commit hooks**: Husky + lint-staged run `oxlint` and `oxfmt` on staged files
-
-Run `bun run check` before committing to fix any issues.
-
-### File Organization
+## Layout
 
 ```
-apps/web/
-├── src/
-│   ├── components/     # Local components
-│   ├── routes/         # TanStack Router file-based routes
-│   ├── router.tsx      # Router configuration
-│   └── router.tsx.gen  # Generated route tree
-├── vite.config.ts
-└── package.json
-
-packages/ui/
-├── src/
-│   ├── components/     # Shared UI components
-│   ├── lib/           # Utilities (cn, etc.)
-│   ├── hooks/         # Shared hooks
-│   └── styles/        # Global CSS
-└── package.json
+src/
+├── components/       # app components
+│   └── ui/           # shadcn/ui primitives
+├── hooks/
+├── lib/              # favicon rendering, gradients, SEO copy
+├── routes/           # TanStack Router file routes
+├── index.css         # tailwind entry, design tokens, @font-face
+├── router.tsx
+└── routeTree.gen.ts  # generated by the router plugin, never edit
 ```
 
-### Adding New Dependencies
+`src/lib/site.ts` holds `SITE_URL`, `SITE_NAME` and shared SEO copy. `vite.config.ts` imports it for the sitemap host, so keep that file dependency-free.
 
-```bash
-# Add to specific workspace
-bun add <package> -w packages/ui
-bun add <package> -w apps/web
+## Conventions
 
-# Add to catalog (shared across workspaces)
-# Edit package.json catalog section
-```
+Imports use the `@/` alias for `src/`. Write `@/components/ui/button`, `@/lib/utils`, `@/hooks/use-lazy-ref`.
 
-### Adding New Components
+shadcn components go in `src/components/ui`, configured by the root `components.json`. Add one with `pnpm dlx shadcn@latest add <name>`; the CLI writes to the right place and rewrites imports.
 
-Use shadcn patterns:
+Design tokens are the `:root`, `.dark` and `@theme inline` blocks in `src/index.css`. Add a color there and use it as a Tailwind utility; don't hardcode oklch values in components.
 
-1. Create component in `packages/ui/src/components/`
-2. Use CVA for variants
-3. Export from component file
-4. Re-export in main entry points if needed
+Components are plain functions with explicit prop types. Variants go through `cva`, conditional classes through `cn()` from `@/lib/utils`. Files are kebab-case, components PascalCase.
 
-## Key Technologies
+TypeScript is strict with `noUnusedLocals` and `noUnusedParameters`, so remove unused imports rather than prefixing them.
 
-- **React 19** with TypeScript
-- **TanStack Start** (file-based routing)
-- **Vite** for bundling
-- **Tailwind CSS v4**
-- **shadcn/ui** patterns
-- **Zod** for validation
-- **@t3-oss/env-core** for env types
+## Deployment
 
-## Environment Variables
+Deploys run in Cloudflare Workers Builds. The `favcn` worker is connected to `atybdot/favcn` in the Cloudflare dashboard and builds every push to `development`; there is no deploy step in GitHub Actions and no token stored in the repo.
 
-Define in `packages/env/src/web.ts` using Zod schemas with @t3-oss/env-core.
+The worker serves `favcn.atyb.dev`. A hostname can only attach to one Worker, so the old `favcn-mono` must be deleted or detached before the first build of `favcn` can claim the domain.

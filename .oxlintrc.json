@@ -1,7 +1,9 @@
 {
   "plugins": null,
   "categories": {},
-  "rules": {},
+  "rules": {
+    "complexity": ["error", { "max": 12 }]
+  },
   "settings": {
     "jsx-a11y": {
       "polymorphicPropName": null,
@@ -35,5 +37,12 @@
     "builtin": true
   },
   "globals": {},
-  "ignorePatterns": []
+  "ignorePatterns": [
+    "node_modules/**",
+    "dist/**",
+    ".wrangler/**",
+    "coverage/**",
+    "src/routeTree.gen.ts",
+    "worker-configuration.d.ts"
+  ]
 }

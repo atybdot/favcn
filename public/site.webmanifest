@@ -1,0 +1,26 @@
+{
+  "name": "favcn - Free Favicon Generator",
+  "short_name": "favcn",
+  "description": "Free favicon generator. Turn an image, emoji, text, shape or gradient into ico, png and touch icons, entirely in the browser.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["developer", "design", "utilities"],
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#0a0a0a",
+  "background_color": "#0a0a0a"
+}
