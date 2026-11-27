@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, Activity, type ElementType } from "react";
 import { useDropzone, type FileRejection } from "react-dropzone";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import {
   UploadCloud,
   Download,
@@ -163,24 +164,28 @@ export function Generator({ onSourceChange }: { onSourceChange?: (hasSource: boo
 
   const [downloadZip, setDownloadZip] = useState(true);
 
-  const onDrop = async (acceptedFiles: File[], fileRejections: FileRejection[]) => {
-    setError(null);
-    if (fileRejections.length > 0) {
-      setError(fileRejections[0].errors[0].message);
-      return;
-    }
-    if (acceptedFiles.length === 0) return;
-    try {
-      const file = acceptedFiles[0];
-      const img = await fileToImage(file);
-      setSourceImage(img);
-      setPreviewUrl(img.src);
-      // Store file image for restoration when switching back
-      fileImageRef.current = { img, url: img.src };
-    } catch (e: any) {
-      setError(e.message || "Failed to parse image.");
-    }
+  const handleImageReady = (img: HTMLImageElement, url: string) => {
+    setSourceImage(img);
+    setPreviewUrl(url);
   };
+
+  // Let the page know whether the installation guide is taking up the space
+  // below the generator, so the long-form guide can step aside meanwhile.
+  useEffect(() => {
+    onSourceChange?.(sourceImage !== null);
+  }, [sourceImage, onSourceChange]);
+
+  const onDrop = (acceptedFiles: File[], fileRejections: FileRejection[]) =>
+    loadDroppedImage(
+      acceptedFiles,
+      fileRejections,
+      (img) => {
+        handleImageReady(img, img.src);
+        // Store file image for restoration when switching back
+        fileImageRef.current = { img, url: img.src };
+      },
+      setError,
+    );
 
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
@@ -207,49 +212,15 @@ export function Generator({ onSourceChange }: { onSourceChange?: (hasSource: boo
     setIsGenerating(true);
     setError(null);
 
-    const toastId = toast.loading("generating favicon assets\u2026");
+    const toastId = toast.loading("generating icons\u2026");
 
     try {
-      const sizesToGenerate = downloadZip ? SIZES_FULL : SIZES_ICO_ONLY;
-
-      // Yield to the event loop so the UI (toast, button state) can update
-      // before heavy canvas work begins.
-      await new Promise((r) => setTimeout(r, 0));
-
-      const { zipBlob } = await generateAssetsZip(sourceImage, sizesToGenerate);
-
-      let downloadUrl = "";
-      let filename = "";
-
-      if (downloadZip) {
-        downloadUrl = URL.createObjectURL(zipBlob);
-        filename = "favicon-assets.zip";
-      } else {
-        const JSZip = (await import("jszip")).default;
-        const zip = await JSZip.loadAsync(zipBlob);
-        const icoFile = zip.file("favicon.ico");
-        if (icoFile) {
-          const icoBlob = await icoFile.async("blob");
-          downloadUrl = URL.createObjectURL(icoBlob);
-          filename = "favicon.ico";
-        }
-      }
-
-      if (downloadUrl) {
-        const a = document.createElement("a");
-        a.href = downloadUrl;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(downloadUrl);
-      }
-
-      toast.success("favicon assets ready \u2014 download started.", { id: toastId });
-    } catch (e: any) {
-      const msg = e.message || "Generation failed.";
-      setError(msg);
-      toast.error(msg, { id: toastId });
+      await downloadGeneratedAsset(sourceImage, downloadZip);
+      toast.success("icons ready, download started.", { id: toastId });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "could not generate the icons.";
+      setError(message);
+      toast.error(message, { id: toastId });
     } finally {
       setIsGenerating(false);
     }
