@@ -61,8 +61,11 @@
     "wrangler": "4.98.0"
   },
   "lint-staged": {
-    "*": [
-      "oxlint",
+    "*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}": [
+      "oxlint --no-error-on-unmatched-pattern",
+      "oxfmt --write"
+    ],
+    "*.{json,jsonc,css,md,mdx,html,yml,yaml}": [
       "oxfmt --write"
     ]
   },
