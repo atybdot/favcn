@@ -324,7 +324,7 @@ export function Generator({ onSourceChange }: { onSourceChange?: (hasSource: boo
 
         if (!hasShownFaviconHint.current) {
           // hasShownFaviconHint.current = true;
-          toast("check the browser tab — your favicon is live.", {
+          toast("look at the browser tab. your favicon is live.", {
             duration: 4000,
             position: "top-left",
             dismissible: true,
@@ -350,14 +350,15 @@ export function Generator({ onSourceChange }: { onSourceChange?: (hasSource: boo
       {/* header */}
       <header className="space-y-3">
         <div className="flex items-center justify-between gap-4">
-          <h1 className="text-3xl">
-            <span className="text-muted-foreground">favcn.</span> favicon generator
-          </h1>
+          <div>
+            <h1 className="text-3xl">favcn.</h1>
+            <p className="text-lg text-muted-foreground">free favicon generator</p>
+          </div>
           <ModeToggle />
         </div>
         <p className="text-muted-foreground tracking-tight">
-          Create a favicon from an image, emoji, gradient, shape or text. Free, in-browser, and
-          ready for any framework.
+          Start from an image, emoji, text, shape or gradient. Everything renders in this tab, so
+          nothing uploads.
         </p>
       </header>
 
@@ -401,7 +402,7 @@ export function Generator({ onSourceChange }: { onSourceChange?: (hasSource: boo
                   <div className="space-y-2 text-center">
                     <img
                       src={previewUrl}
-                      className="size-24 rounded-md border border-border bg-muted/30 object-cover"
+                      className="size-24 rounded-md border border-border checkerboard object-cover"
                       alt="Preview"
                     />
                     <span className="text-[10px] text-muted-foreground">original</span>
@@ -409,7 +410,7 @@ export function Generator({ onSourceChange }: { onSourceChange?: (hasSource: boo
                   <div className="space-y-2 text-center">
                     <img
                       src={previewUrl}
-                      className="size-8 rounded-sm border border-border bg-muted/30 object-cover"
+                      className="size-8 rounded-sm border border-border checkerboard object-cover"
                       alt="32px"
                     />
                     <span className="text-[10px] text-muted-foreground">32px</span>
@@ -417,7 +418,7 @@ export function Generator({ onSourceChange }: { onSourceChange?: (hasSource: boo
                   <div className="space-y-2 text-center">
                     <img
                       src={previewUrl}
-                      className="size-4 rounded-sm border border-border bg-muted/30 object-cover"
+                      className="size-4 rounded-sm border border-border checkerboard object-cover"
                       alt="16px"
                     />
                     <span className="text-[10px] text-muted-foreground">16px</span>
@@ -489,10 +490,10 @@ export function Generator({ onSourceChange }: { onSourceChange?: (hasSource: boo
             />
             <div className="space-y-1 leading-none">
               <Label htmlFor="downloadZip" className="text-sm">
-                include seo bundle
+                include the full bundle
               </Label>
               <p className="text-xs text-muted-foreground">
-                .ico + png variants + apple-touch + android icons + manifest
+                png sizes, apple touch, android icons and the manifest alongside the ico
               </p>
             </div>
           </div>
