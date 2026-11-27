@@ -52,4 +52,6 @@ TypeScript is strict with `noUnusedLocals` and `noUnusedParameters`, so remove u
 
 ## Deployment
 
-`pnpm deploy` builds, then `wrangler deploy` uploads. The worker is named `favcn-mono` in `cloudflare.config.ts` and serves `favcn.atyb.dev`. Renaming the worker creates a new Worker on Cloudflare and moves the custom domain with it, so change the name only when you mean to cut over.
+Deploys run in GitHub Actions on every push to `development` (`.github/workflows/deploy.yml`), never from a laptop. The workflow builds and runs `wrangler deploy` with the pinned wrangler, using `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
+
+The worker is named `favcn` in `cloudflare.config.ts` and serves `favcn.atyb.dev`. A hostname can only attach to one Worker, so a rename means deleting or detaching the old worker before the new one can claim the domain.

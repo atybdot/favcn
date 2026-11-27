@@ -6,11 +6,10 @@ import { defineWorker } from "@cloudflare/vite-plugin/experimental-config";
  * This replaces `wrangler.jsonc`. The Vite plugin reads it during dev and
  * build, and `wrangler deploy` uses the generated output in `dist/`.
  *
- * `cloudflare.config.ts` is loaded by Node.js, not Bun, so the app scripts
- * invoke Vite through `node` explicitly.
+ * Run it on Node. Bun cannot load this file.
  */
 export default defineWorker({
-  name: "favcn-mono",
+  name: "favcn",
   entrypoint: "@tanstack/react-start/server-entry",
   compatibilityDate: "2026-06-06",
   compatibilityFlags: ["nodejs_compat"],
