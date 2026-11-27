@@ -190,8 +190,6 @@ function RootDocument() {
   useEffect(() => {
     if (import.meta.env.DEV) {
       void import("react-grab");
-    } else {
-      inject();
     }
   }, []);
 
@@ -201,6 +199,14 @@ function RootDocument() {
         <HeadContent />
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: SEO_SCRIPT }} />
+        {import.meta.env.PROD ? (
+          <script
+            defer
+            src="https://cloud.umami.is/script.js"
+            data-website-id="5a3e82c8-5133-43c0-b648-7fd5fb6bb7b4"
+            data-domains={TRACKING_DOMAIN}
+          />
+        ) : null}
       </head>
       <body className="min-h-svh bg-background text-foreground">
         <ThemeProvider defaultTheme="dark" storageKey="favcn-theme">
